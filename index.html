@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2023–2025년 헌금 3년 비교</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+    background: #f0f4f8;
+    color: #2d3748;
+    padding: 24px 20px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.75rem;
+    color: #1a365d;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .subtitle {
+    text-align: center;
+    color: #718096;
+    font-size: 0.88rem;
+    margin-bottom: 28px;
+  }
+
+  /* ── 요약 카드 ── */
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 26px;
+  }
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    text-align: center;
+    border-top: 5px solid;
+  }
+  .card.y2023 { border-color: #e53e3e; }
+  .card.y2024 { border-color: #2b6cb0; }
+  .card.y2025 { border-color: #d69e2e; }
+  .card .year  { font-size: 0.8rem; color: #718096; margin-bottom: 4px; font-weight: 600; letter-spacing: 1px; }
+  .card .total { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+  .card.y2023 .total { color: #c53030; }
+  .card.y2024 .total { color: #2b6cb0; }
+  .card.y2025 .total { color: #b7791f; }
+  .card .change {
+    display: inline-block;
+    font-size: 0.78rem;
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-weight: 600;
+  }
+  .change.up   { background: #f0fff4; color: #276749; }
+  .change.down { background: #fff5f5; color: #c53030; }
+  .change.base { background: #f7fafc; color: #718096; }
+
+  /* ── 차트 그리드 ── */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+  .chart-box {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  .chart-box.full { grid-column: 1 / -1; }
+  .chart-box h2 {
+    font-size: 0.95rem;
+    color: #2d3748;
+    margin-bottom: 14px;
+    font-weight: 700;
+    border-left: 4px solid #4299e1;
+    padding-left: 10px;
+  }
+
+  /* ── 표 공통 ── */
+  .table-box {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+  .table-box h2 {
+    font-size: 0.95rem;
+    color: #2d3748;
+    margin-bottom: 14px;
+    font-weight: 700;
+    border-left: 4px solid #48bb78;
+    padding-left: 10px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+  thead th {
+    padding: 9px 11px;
+    text-align: center;
+    font-weight: 700;
+    border-bottom: 2px solid #bee3f8;
+  }
+  thead tr:first-child th { background: #ebf8ff; color: #2b6cb0; }
+  thead tr:last-child th  { background: #f7fafc; color: #4a5568; font-size: 0.78rem; }
+  td {
+    padding: 7px 11px;
+    text-align: right;
+    border-bottom: 1px solid #e2e8f0;
+    color: #4a5568;
+  }
+  td.month { text-align: center; font-weight: 700; color: #2d3748; }
+  tr.total-row td { font-weight: 700; background: #f0f9ff; color: #1a365d; border-top: 2px solid #bee3f8; }
+  tr:hover td { background: #f7fafc; }
+  .up2   { color: #276749; font-weight: 600; }
+  .down2 { color: #c53030; font-weight: 600; }
+
+  /* ── 헌금 종류별 표 ── */
+  .type-table thead tr:first-child th { background: #f0fff4; color: #276749; }
+
+  @media (max-width: 768px) {
+    .summary-cards { grid-template-columns: 1fr; }
+    .charts-grid   { grid-template-columns: 1fr; }
+    .chart-box.full { grid-column: auto; }
+  }
+</style>
+</head>
+<body>
+
+<h1>✝ 2023 · 2024 · 2025년 헌금 3년 비교</h1>
+<p class="subtitle">연도별 헌금 추이 비교 현황표</p>
+
+<!-- ── 요약 카드 ── -->
+<div class="summary-cards">
+  <div class="card y2023">
+    <div class="year">2023년</div>
+    <div class="total">1,605,699,869원</div>
+    <span class="change base">기준 연도</span>
+  </div>
+  <div class="card y2024">
+    <div class="year">2024년</div>
+    <div class="total">1,542,301,636원</div>
+    <span class="change down">▼ 63,398,233원 (-3.9%)</span>
+  </div>
+  <div class="card y2025">
+    <div class="year">2025년</div>
+    <div class="total">1,438,607,585원</div>
+    <span class="change down">▼ 103,694,051원 (-6.7%)</span>
+  </div>
+</div>
+
+<!-- ── 차트 ── -->
+<div class="charts-grid">
+
+  <!-- 월별 총합 3년 비교 라인 -->
+  <div class="chart-box full">
+    <h2>📈 월별 총 헌금 3년 추이 비교</h2>
+    <div style="height:320px"><canvas id="lineChart"></canvas></div>
+  </div>
+
+  <!-- 십일조 비교 -->
+  <div class="chart-box">
+    <h2>💰 월별 십일조 비교</h2>
+    <div style="height:280px"><canvas id="titheChart"></canvas></div>
+  </div>
+
+  <!-- 감사헌금 비교 -->
+  <div class="chart-box">
+    <h2>🙏 월별 감사헌금 비교</h2>
+    <div style="height:280px"><canvas id="thanksChart"></canvas></div>
+  </div>
+
+  <!-- 연간 헌금 종류별 누적 바 -->
+  <div class="chart-box full">
+    <h2>📊 연도별 헌금 종류 구성 비교</h2>
+    <div style="height:300px"><canvas id="typeBar"></canvas></div>
+  </div>
+
+</div>
+
+<!-- ── 월별 상세 비교표 ── -->
+<div class="table-box">
+  <h2>📋 월별 총 헌금 비교 (단위: 원)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2">월</th>
+        <th>2023년</th>
+        <th>2024년</th>
+        <th>2025년</th>
+        <th>23→24 증감</th>
+        <th>24→25 증감</th>
+      </tr>
+    </thead>
+    <tbody id="monthTable"></tbody>
+  </table>
+</div>
+
+<!-- ── 헌금 종류별 연간 비교표 ── -->
+<div class="table-box">
+  <h2>📋 헌금 종류별 연간 비교 (단위: 원)</h2>
+  <table class="type-table">
+    <thead>
+      <tr>
+        <th>항목</th>
+        <th>2023년</th>
+        <th>2024년</th>
+        <th>2025년</th>
+        <th>23→24 증감</th>
+        <th>24→25 증감</th>
+      </tr>
+    </thead>
+    <tbody id="typeTable"></tbody>
+  </table>
+</div>
+
+<script>
+// ─── 데이터 정의 ───────────────────────────────────────────
+const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+
+// 월별 합계 (연도별헌금 시트 기준, 2025년 12월은 원장에서 보완)
+const monthly = {
+  2023: [162952417, 108487717, 110684062, 134396237, 115991368, 116435397, 117869344, 106129537, 94825664, 127304789, 97577178, 97235285],
+  2024: [139067130, 112205001, 119816889, 94059293, 121651496, 134092680, 99806347, 133779197, 117093382, 100079487, 91516939, 114028271],
+  // 2025: 1~11월 연도별헌금 시트, 12월은 원장 합산
+  2025: [118130586, 92543842, 120308432, 103620739, 103389299, 116650926, 96850173, 113668712, 96138791, 109553547, 103502882, 136513056],
+};
+
+// 헌금 종류별 연간 합계
+const typeData = {
+  '십일조':  { 2023: 978192025,  2024: 956777528,  2025: 938848912  },
+  '감사헌금': { 2023: 296801387,  2024: 275091919,  2025: 236407135  },
+  '절기헌금': { 2023: 215810874,  2024: 165105524,  2025: 168673600  },
+  '선교헌금': { 2023: 82247583,   2024: 108803165,  2025: 63421318   },
+  '건축헌금': { 2023: 13520000,   2024: 18080000,   2025: 10965000   },
+  '주일헌금': { 2023: 5664000,    2024: 6373500,    2025: 4589620    },
+  '차량헌금': { 2023: 10314000,   2024: 7220000,    2025: 4099000    },
+  '꽃드림':   { 2023: 3150000,    2024: 4850000,    2025: 4980000    },
+};
+
+// 총액
+const totals = {
+  2023: 1605699869,
+  2024: 1542301636,
+  2025: 1438607585,
+};
+
+// ─── 유틸 ───────────────────────────────────────────────────
+const fmt  = n => n.toLocaleString('ko-KR');
+const fmts = n => (n >= 0 ? '+' : '') + n.toLocaleString('ko-KR');
+const pct  = (a, b) => ((b - a) / a * 100).toFixed(1);
+const clr  = n => n > 0 ? 'up2' : n < 0 ? 'down2' : '';
+
+// 색상: 2023=빨강, 2024=파랑, 2025=노랑
+const C = { 2023: '#e53e3e', 2024: '#2b6cb0', 2025: '#ecc94b' };
+
+// ─── 월별 총합 라인 차트 ─────────────────────────────────────
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [2023, 2024, 2025].map(y => ({
+      label: y + '년',
+      data: monthly[y],
+      borderColor: C[y],
+      backgroundColor: C[y] + '22',
+      fill: false,
+      tension: 0.3,
+      pointRadius: 7,
+      pointHoverRadius: 9,
+      pointBackgroundColor: C[y],
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      borderWidth: 3,
+    }))
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { size: 12 }, boxWidth: 20, boxHeight: 4, padding: 16 } },
+      tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } }
+    },
+    scales: {
+      x: { grid: { display: false } },
+      y: { ticks: { callback: v => Math.round(v/10000000) + '천만', font: { size: 11 } }, grid: { color: '#e2e8f0' } }
+    }
+  }
+});
+
+// ─── 십일조 라인 ─────────────────────────────────────────────
+const tithe = {
+  2023: [109471617,78344717,81021262,86070347,87495158,77015397,84882344,72865050,67217864,93024789,74084178,66699302],
+  2024: [89786030,82593766,86204889,67904764,74176496,79096100,68323727,106762587,84661322,71299487,66891489,79076871],
+  2025: [79652586,66139842,86344861,74498819,73388489,85158926,74458361,83103212,71204791,85006547,77221868,82670610],
+};
+new Chart(document.getElementById('titheChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [2023, 2024, 2025].map(y => ({
+      label: y + '년',
+      data: tithe[y],
+      borderColor: C[y],
+      backgroundColor: C[y] + '18',
+      fill: false, tension: 0.3,
+      pointRadius: 6, pointHoverRadius: 8,
+      pointBackgroundColor: C[y],
+      pointBorderColor: '#fff', pointBorderWidth: 2,
+      borderWidth: 2.5,
+    }))
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { font: { size: 11 } } },
+      tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { ticks: { callback: v => Math.round(v/10000000) + '천만', font: { size: 10 } }, grid: { color: '#e2e8f0' } }
+    }
+  }
+});
+
+// ─── 감사헌금 라인 ───────────────────────────────────────────
+const thanks = {
+  2023: [44040000,22317000,21331100,37003890,17811910,21857000,23653000,26004487,20146000,24703000,16703000,21231000],
+  2024: [38750900,21080000,25143000,18419329,21128000,22913080,19940000,19553000,24584760,19942000,18262950,25374900],
+  2025: [17111000,19715000,22530751,21169420,19130000,23497000,16196712,22190800,18493000,17454000,19809006,19110446],
+};
+new Chart(document.getElementById('thanksChart'), {
+  type: 'line',
+  data: {
+    labels: months,
+    datasets: [2023, 2024, 2025].map(y => ({
+      label: y + '년',
+      data: thanks[y],
+      borderColor: C[y],
+      backgroundColor: C[y] + '18',
+      fill: false, tension: 0.3,
+      pointRadius: 6, pointHoverRadius: 8,
+      pointBackgroundColor: C[y],
+      pointBorderColor: '#fff', pointBorderWidth: 2,
+      borderWidth: 2.5,
+    }))
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { position: 'top', labels: { font: { size: 11 } } },
+      tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } } },
+    scales: {
+      x: { grid: { display: false } },
+      y: { ticks: { callback: v => Math.round(v/1000000) + '백만', font: { size: 10 } }, grid: { color: '#e2e8f0' } }
+    }
+  }
+});
+
+// ─── 연도별 종류 누적 바 ─────────────────────────────────────
+const typeKeys = Object.keys(typeData);
+const typeColors = ['#4299e1','#48bb78','#ed8936','#9f7aea','#f687b3','#68d391','#fc8181','#f6e05e'];
+new Chart(document.getElementById('typeBar'), {
+  type: 'bar',
+  data: {
+    labels: ['2023년', '2024년', '2025년'],
+    datasets: typeKeys.map((k, i) => ({
+      label: k,
+      data: [typeData[k][2023], typeData[k][2024], typeData[k][2025]],
+      backgroundColor: typeColors[i],
+      borderWidth: 0,
+    }))
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'top', labels: { font: { size: 11 }, padding: 12 } },
+      tooltip: { callbacks: {
+        label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원`,
+        footer: items => `합계: ${items.reduce((s,i)=>s+i.parsed.y,0).toLocaleString('ko-KR')}원`
+      }}
+    },
+    scales: {
+      x: { stacked: true, grid: { display: false } },
+      y: { stacked: true, ticks: { callback: v => Math.round(v/100000000) + '억', font: { size: 11 } }, grid: { color: '#e2e8f0' } }
+    }
+  }
+});
+
+// ─── 월별 상세 표 ────────────────────────────────────────────
+const tbody1 = document.getElementById('monthTable');
+let sum23=0, sum24=0, sum25=0;
+months.forEach((m, i) => {
+  const v23=monthly[2023][i], v24=monthly[2024][i], v25=monthly[2025][i];
+  sum23+=v23; sum24+=v24; sum25+=v25;
+  const d1=v24-v23, d2=v25-v24;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="month">${m}</td>
+    <td>${fmt(v23)}</td>
+    <td>${fmt(v24)}</td>
+    <td>${fmt(v25)}</td>
+    <td class="${clr(d1)}">${fmts(d1)} (${pct(v23,v24)}%)</td>
+    <td class="${clr(d2)}">${fmts(d2)} (${pct(v24,v25)}%)</td>`;
+  tbody1.appendChild(tr);
+});
+// 합계 행
+const ttr = document.createElement('tr');
+ttr.className = 'total-row';
+const td1=sum24-sum23, td2=sum25-sum24;
+ttr.innerHTML = `
+  <td class="month">합계</td>
+  <td>${fmt(sum23)}</td>
+  <td>${fmt(sum24)}</td>
+  <td>${fmt(sum25)}</td>
+  <td class="${clr(td1)}">${fmts(td1)} (${pct(sum23,sum24)}%)</td>
+  <td class="${clr(td2)}">${fmts(td2)} (${pct(sum24,sum25)}%)</td>`;
+tbody1.appendChild(ttr);
+
+// ─── 헌금 종류별 표 ─────────────────────────────────────────
+const tbody2 = document.getElementById('typeTable');
+typeKeys.forEach(k => {
+  const v23=typeData[k][2023], v24=typeData[k][2024], v25=typeData[k][2025];
+  const d1=v24-v23, d2=v25-v24;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="month">${k}</td>
+    <td>${fmt(v23)}</td>
+    <td>${fmt(v24)}</td>
+    <td>${fmt(v25)}</td>
+    <td class="${clr(d1)}">${fmts(d1)} (${pct(v23,v24)}%)</td>
+    <td class="${clr(d2)}">${fmts(d2)} (${pct(v24,v25)}%)</td>`;
+  tbody2.appendChild(tr);
+});
+// 합계 행
+const ttr2 = document.createElement('tr');
+ttr2.className = 'total-row';
+ttr2.innerHTML = `
+  <td class="month">총합계</td>
+  <td>${fmt(totals[2023])}</td>
+  <td>${fmt(totals[2024])}</td>
+  <td>${fmt(totals[2025])}</td>
+  <td class="${clr(totals[2024]-totals[2023])}">${fmts(totals[2024]-totals[2023])} (${pct(totals[2023],totals[2024])}%)</td>
+  <td class="${clr(totals[2025]-totals[2024])}">${fmts(totals[2025]-totals[2024])} (${pct(totals[2024],totals[2025])}%)</td>`;
+tbody2.appendChild(ttr2);
+</script>
+</body>
+</html>
