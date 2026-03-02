@@ -20,6 +20,14 @@
     background: #f0f4f8;
     color: #2d3748;
     padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
   }
   h1 {
     text-align: center;
@@ -146,6 +154,7 @@
 </style>
 </head>
 <body>
+<div class="container">
 
 <h1>✝ 2023 · 2024 · 2025년 헌금 3년 비교</h1>
 <p class="subtitle">연도별 헌금 추이 비교 현황표</p>
@@ -233,6 +242,8 @@
     <tbody id="typeTable"></tbody>
   </table>
 </div>
+
+</div> <!-- .container 끝 -->
 
 <script>
 // ─── 데이터 정의 ───────────────────────────────────────────
