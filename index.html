@@ -92,8 +92,8 @@
     position: relative;
   }
   canvas {
+    display: block;
     width: 100% !important;
-    height: 100% !important;
   }
   .chart-box.full { grid-column: 1 / -1; }
   .chart-box h2 {
@@ -189,25 +189,25 @@
   <!-- 월별 총합 3년 비교 라인 -->
   <div class="chart-box full">
     <h2>📈 월별 총 헌금 3년 추이 비교</h2>
-    <div style="height:320px"><canvas id="lineChart"></canvas></div>
+    <div style="position:relative; height:320px"><canvas id="lineChart"></canvas></div>
   </div>
 
   <!-- 십일조 비교 -->
   <div class="chart-box">
     <h2>💰 월별 십일조 비교</h2>
-    <div style="height:280px"><canvas id="titheChart"></canvas></div>
+    <div style="position:relative; height:280px"><canvas id="titheChart"></canvas></div>
   </div>
 
   <!-- 감사헌금 비교 -->
   <div class="chart-box">
     <h2>🙏 월별 감사헌금 비교</h2>
-    <div style="height:280px"><canvas id="thanksChart"></canvas></div>
+    <div style="position:relative; height:280px"><canvas id="thanksChart"></canvas></div>
   </div>
 
   <!-- 연간 헌금 종류별 누적 바 -->
   <div class="chart-box full">
     <h2>📊 연도별 헌금 종류 구성 비교</h2>
-    <div style="height:300px"><canvas id="typeBar"></canvas></div>
+    <div style="position:relative; height:300px"><canvas id="typeBar"></canvas></div>
   </div>
 
 </div>
@@ -479,15 +479,10 @@ ttr2.innerHTML = `
 tbody2.appendChild(ttr2);
 
 // ─── 리사이즈 이벤트 수동 처리 ────────────────────────────────
-let resizeTimer;
 window.addEventListener('resize', () => {
-  clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    charts.forEach(chart => {
-      chart.resize();
-      chart.update('none');
-    });
-  }, 150);
+  charts.forEach(chart => {
+    chart.resize();
+  });
 });
 </script>
 </body>
