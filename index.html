@@ -93,7 +93,6 @@
   }
   canvas {
     display: block;
-    width: 100% !important;
   }
   .chart-box.full { grid-column: 1 / -1; }
   .chart-box h2 {
@@ -313,7 +312,7 @@ charts.push(new Chart(document.getElementById('lineChart'), {
     }))
   },
     options: {
-    responsive: true, maintainAspectRatio: false, resizeDelay: 100,
+    responsive: true, maintainAspectRatio: false,
     plugins: {
       legend: { position: 'top', labels: { font: { size: 12 }, boxWidth: 20, boxHeight: 4, padding: 16 } },
       tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } }
