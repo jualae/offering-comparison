@@ -85,7 +85,7 @@
     border-radius: 14px;
     padding: 20px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-    min-width: 0; /* grid 자식이 넘치는 현상 방지 */
+    min-width: 0;
   }
   .chart-box.full { grid-column: 1 / -1; }
   .chart-box h2 {
@@ -96,7 +96,6 @@
     border-left: 4px solid #4299e1;
     padding-left: 10px;
   }
-  /* 캔버스 래퍼: 고정 높이 + 넘침 차단 */
   .chart-wrap {
     position: relative;
     overflow: hidden;
@@ -145,7 +144,6 @@
   .up2   { color: #276749; font-weight: 600; }
   .down2 { color: #c53030; font-weight: 600; }
 
-  /* ── 헌금 종류별 표 ── */
   .type-table thead tr:first-child th { background: #f0fff4; color: #276749; }
 
   @media (max-width: 768px) {
@@ -161,7 +159,6 @@
 <h1>✝ 2023 · 2024 · 2025년 헌금 3년 비교</h1>
 <p class="subtitle">연도별 헌금 추이 비교 현황표</p>
 
-<!-- ── 요약 카드 ── -->
 <div class="summary-cards">
   <div class="card y2023">
     <div class="year">2023년</div>
@@ -180,36 +177,25 @@
   </div>
 </div>
 
-<!-- ── 차트 ── -->
 <div class="charts-grid">
-
-  <!-- 월별 총합 3년 비교 라인 -->
   <div class="chart-box full">
     <h2>📈 월별 총 헌금 3년 추이 비교</h2>
     <div class="chart-wrap" style="height:320px"><canvas id="lineChart"></canvas></div>
   </div>
-
-  <!-- 십일조 비교 -->
   <div class="chart-box">
     <h2>💰 월별 십일조 비교</h2>
     <div class="chart-wrap" style="height:280px"><canvas id="titheChart"></canvas></div>
   </div>
-
-  <!-- 감사헌금 비교 -->
   <div class="chart-box">
     <h2>🙏 월별 감사헌금 비교</h2>
     <div class="chart-wrap" style="height:280px"><canvas id="thanksChart"></canvas></div>
   </div>
-
-  <!-- 연간 헌금 종류별 누적 바 -->
   <div class="chart-box full">
     <h2>📊 연도별 헌금 종류 구성 비교</h2>
     <div class="chart-wrap" style="height:300px"><canvas id="typeBar"></canvas></div>
   </div>
-
 </div>
 
-<!-- ── 월별 상세 비교표 ── -->
 <div class="table-box">
   <h2>📋 월별 총 헌금 비교 (단위: 원)</h2>
   <table>
@@ -227,7 +213,6 @@
   </table>
 </div>
 
-<!-- ── 헌금 종류별 연간 비교표 ── -->
 <div class="table-box">
   <h2>📋 헌금 종류별 연간 비교 (단위: 원)</h2>
   <table class="type-table">
@@ -246,17 +231,26 @@
 </div>
 
 <script>
-// ─── 데이터 정의 ───────────────────────────────────────────
 const months = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
 
-// 월별 합계 (엑셀 원장 기준 정확한 데이터)
 const monthly = {
   2023: [163780417, 108587717, 110684062, 201534237, 115991368, 116435397, 150442344, 105655537, 94868264, 127304789, 178851052, 128353285],
   2024: [139317130, 112205001, 155793889, 95359293, 121651496, 134092688, 129961347, 133779197, 117093382, 100079487, 159087463, 143881271],
   2025: [118130586, 92543842, 120308432, 139620739, 103389299, 116650926, 124896173, 113668712, 96138791, 109553547, 167193482, 136513056],
 };
 
-// 헌금 종류별 연간 합계
+const tithe = {
+  2023: [109471617, 78344717, 81021262, 86070347, 87495158, 77015397, 81882344, 72865050, 67217864, 93024789, 74084178, 66699302],
+  2024: [89786030, 82593766, 86204889, 67904764, 74176496, 79096100, 68323727, 106762587, 84661322, 71299487, 66891489, 79076871],
+  2025: [79652586, 66139842, 86344861, 74498819, 73388489, 85158926, 74458361, 83103212, 71204791, 85006547, 77221868, 82670610],
+};
+
+const thanks = {
+  2023: [25632000, 21948000, 21188100, 36641890, 17726910, 21771000, 23146000, 25248487, 19981000, 24398000, 16369000, 20707000],
+  2024: [21341900, 20906000, 23545000, 17165329, 19935000, 21233088, 19510000, 19462000, 24224760, 19472000, 18158950, 25280900],
+  2025: [17111000, 19715000, 22530751, 21169420, 19130000, 23497000, 16196712, 22190800, 18493000, 17454000, 19809006, 19110446],
+};
+
 const typeData = {
   '십일조':  { 2023: 975192025,  2024: 956777528,  2025: 938848912  },
   '감사헌금': { 2023: 274757387,  2024: 250234927,  2025: 236407135  },
@@ -268,23 +262,18 @@ const typeData = {
   '꽃드림':   { 2023: 3150000,    2024: 4950000,    2025: 4980000    },
 };
 
-// 총액
 const totals = {
   2023: 1602488469,
   2024: 1542301644,
   2025: 1438607585,
 };
 
-// ─── 유틸 ───────────────────────────────────────────────────
 const fmt  = n => n.toLocaleString('ko-KR');
 const fmts = n => (n >= 0 ? '+' : '') + n.toLocaleString('ko-KR');
 const pct  = (a, b) => ((b - a) / a * 100).toFixed(1);
 const clr  = n => n > 0 ? 'up2' : n < 0 ? 'down2' : '';
-
-// 색상: 2023=빨강, 2024=파랑, 2025=노랑
 const C = { 2023: '#e53e3e', 2024: '#2b6cb0', 2025: '#ecc94b' };
 
-// ─── 공통 리사이즈 핸들러: 차트가 부모 높이를 넘지 않게 고정 ──
 function clampSize(chart) {
   const parent = chart.canvas.parentElement;
   if (!parent) return;
@@ -294,7 +283,6 @@ function clampSize(chart) {
   }
 }
 
-// ─── 월별 총합 라인 차트 ─────────────────────────────────────
 new Chart(document.getElementById('lineChart'), {
   type: 'line',
   data: {
@@ -304,20 +292,12 @@ new Chart(document.getElementById('lineChart'), {
       data: monthly[y],
       borderColor: C[y],
       backgroundColor: C[y] + '22',
-      fill: false,
-      tension: 0.3,
-      pointRadius: 7,
-      pointHoverRadius: 9,
-      pointBackgroundColor: C[y],
-      pointBorderColor: '#fff',
-      pointBorderWidth: 2,
-      borderWidth: 3,
+      fill: false, tension: 0.3, pointRadius: 7, pointHoverRadius: 9,
+      pointBackgroundColor: C[y], pointBorderColor: '#fff', pointBorderWidth: 2, borderWidth: 3,
     }))
   },
   options: {
-    responsive: true, maintainAspectRatio: false,
-    animation: false,
-    onResize: clampSize,
+    responsive: true, maintainAspectRatio: false, animation: false, onResize: clampSize,
     plugins: {
       legend: { position: 'top', labels: { font: { size: 12 }, boxWidth: 20, boxHeight: 4, padding: 16 } },
       tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } }
@@ -329,12 +309,6 @@ new Chart(document.getElementById('lineChart'), {
   }
 });
 
-// ─── 십일조 라인 ─────────────────────────────────────────────
-const tithe = {
-  2023: [109471617, 78344717, 81021262, 86070347, 87495158, 77015397, 81882344, 72865050, 67217864, 93024789, 74084178, 66699302],
-  2024: [89786030, 82593766, 86204889, 67904764, 74176496, 79096100, 68323727, 106762587, 84661322, 71299487, 66891489, 79076871],
-  2025: [79652586, 66139842, 86344861, 74498819, 73388489, 85158926, 74458361, 83103212, 71204791, 85006547, 77221868, 82670610],
-};
 new Chart(document.getElementById('titheChart'), {
   type: 'line',
   data: {
@@ -344,17 +318,12 @@ new Chart(document.getElementById('titheChart'), {
       data: tithe[y],
       borderColor: C[y],
       backgroundColor: C[y] + '18',
-      fill: false, tension: 0.3,
-      pointRadius: 6, pointHoverRadius: 8,
-      pointBackgroundColor: C[y],
-      pointBorderColor: '#fff', pointBorderWidth: 2,
-      borderWidth: 2.5,
+      fill: false, tension: 0.3, pointRadius: 6, pointHoverRadius: 8,
+      pointBackgroundColor: C[y], pointBorderColor: '#fff', pointBorderWidth: 2, borderWidth: 2.5,
     }))
   },
   options: {
-    responsive: true, maintainAspectRatio: false,
-    animation: false,
-    onResize: clampSize,
+    responsive: true, maintainAspectRatio: false, animation: false, onResize: clampSize,
     plugins: { legend: { position: 'top', labels: { font: { size: 11 } } },
       tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } } },
     scales: {
@@ -364,12 +333,6 @@ new Chart(document.getElementById('titheChart'), {
   }
 });
 
-// ─── 감사헌금 라인 ───────────────────────────────────────────
-const thanks = {
-  2023: [25632000, 21948000, 21188100, 36641890, 17726910, 21771000, 23146000, 25248487, 19981000, 24398000, 16369000, 20707000],
-  2024: [21341900, 20906000, 23545000, 17165329, 19935000, 21233088, 19510000, 19462000, 24224760, 19472000, 18158950, 25280900],
-  2025: [17111000, 19715000, 22530751, 21169420, 19130000, 23497000, 16196712, 22190800, 18493000, 17454000, 19809006, 19110446],
-};
 new Chart(document.getElementById('thanksChart'), {
   type: 'line',
   data: {
@@ -379,17 +342,12 @@ new Chart(document.getElementById('thanksChart'), {
       data: thanks[y],
       borderColor: C[y],
       backgroundColor: C[y] + '18',
-      fill: false, tension: 0.3,
-      pointRadius: 6, pointHoverRadius: 8,
-      pointBackgroundColor: C[y],
-      pointBorderColor: '#fff', pointBorderWidth: 2,
-      borderWidth: 2.5,
+      fill: false, tension: 0.3, pointRadius: 6, pointHoverRadius: 8,
+      pointBackgroundColor: C[y], pointBorderColor: '#fff', pointBorderWidth: 2, borderWidth: 2.5,
     }))
   },
   options: {
-    responsive: true, maintainAspectRatio: false,
-    animation: false,
-    onResize: clampSize,
+    responsive: true, maintainAspectRatio: false, animation: false, onResize: clampSize,
     plugins: { legend: { position: 'top', labels: { font: { size: 11 } } },
       tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } } },
     scales: {
@@ -399,7 +357,6 @@ new Chart(document.getElementById('thanksChart'), {
   }
 });
 
-// ─── 연도별 종류 누적 바 ─────────────────────────────────────
 const typeKeys = Object.keys(typeData);
 const typeColors = ['#4299e1','#48bb78','#ed8936','#9f7aea','#f687b3','#68d391','#fc8181','#f6e05e'];
 new Chart(document.getElementById('typeBar'), {
@@ -414,9 +371,7 @@ new Chart(document.getElementById('typeBar'), {
     }))
   },
   options: {
-    responsive: true, maintainAspectRatio: false,
-    animation: false,
-    onResize: clampSize,
+    responsive: true, maintainAspectRatio: false, animation: false, onResize: clampSize,
     plugins: {
       legend: { position: 'top', labels: { font: { size: 11 }, padding: 12 } },
       tooltip: { callbacks: {
@@ -431,7 +386,6 @@ new Chart(document.getElementById('typeBar'), {
   }
 });
 
-// ─── 월별 상세 표 ────────────────────────────────────────────
 const tbody1 = document.getElementById('monthTable');
 let sum23=0, sum24=0, sum25=0;
 months.forEach((m, i) => {
@@ -448,7 +402,6 @@ months.forEach((m, i) => {
     <td class="${clr(d2)}">${fmts(d2)} (${pct(v24,v25)}%)</td>`;
   tbody1.appendChild(tr);
 });
-// 합계 행
 const ttr = document.createElement('tr');
 ttr.className = 'total-row';
 const td1=sum24-sum23, td2=sum25-sum24;
@@ -461,7 +414,6 @@ ttr.innerHTML = `
   <td class="${clr(td2)}">${fmts(td2)} (${pct(sum24,sum25)}%)</td>`;
 tbody1.appendChild(ttr);
 
-// ─── 헌금 종류별 표 ─────────────────────────────────────────
 const tbody2 = document.getElementById('typeTable');
 typeKeys.forEach(k => {
   const v23=typeData[k][2023], v24=typeData[k][2024], v25=typeData[k][2025];
@@ -476,7 +428,6 @@ typeKeys.forEach(k => {
     <td class="${clr(d2)}">${fmts(d2)} (${pct(v24,v25)}%)</td>`;
   tbody2.appendChild(tr);
 });
-// 합계 행
 const ttr2 = document.createElement('tr');
 ttr2.className = 'total-row';
 ttr2.innerHTML = `
@@ -488,6 +439,6 @@ ttr2.innerHTML = `
   <td class="${clr(totals[2025]-totals[2024])}">${fmts(totals[2025]-totals[2024])} (${pct(totals[2024],totals[2025])}%)</td>`;
 tbody2.appendChild(ttr2);
 </script>
-</div><!-- /.page-wrapper -->
+</div>
 </body>
 </html>
