@@ -99,6 +99,7 @@
   }
   .chart-wrap {
     position: relative;
+    overflow: hidden;
   }
 
   /* ── 표 공통 ── */
@@ -281,8 +282,11 @@ const clr  = n => n > 0 ? 'up2' : n < 0 ? 'down2' : '';
 
 const C = { 2023: '#e53e3e', 2024: '#2b6cb0', 2025: '#ecc94b' };
 
+// 차트 인스턴스 저장
+const allCharts = [];
+
 // ─── 월별 총합 라인 차트 ─────────────────────────────────────
-new Chart(document.getElementById('lineChart'), {
+allCharts.push( new Chart(document.getElementById('lineChart'), {
   type: 'line',
   data: {
     labels: months,
@@ -312,7 +316,7 @@ new Chart(document.getElementById('lineChart'), {
       y: { ticks: { callback: v => Math.round(v/10000000) + '천만', font: { size: 11 } }, grid: { color: '#e2e8f0' } }
     }
   }
-});
+}) );
 
 // ─── 십일조 라인 ─────────────────────────────────────────────
 const tithe = {
@@ -320,7 +324,7 @@ const tithe = {
   2024: [89786030, 82593766, 86204889, 67904764, 74176496, 79096100, 68323727, 106762587, 84661322, 71299487, 66891489, 79076871],
   2025: [79652586, 66139842, 86344861, 74498819, 73388489, 85158926, 74458361, 83103212, 71204791, 85006547, 77221868, 82670610],
 };
-new Chart(document.getElementById('titheChart'), {
+allCharts.push( new Chart(document.getElementById('titheChart'), {
   type: 'line',
   data: {
     labels: months,
@@ -345,7 +349,7 @@ new Chart(document.getElementById('titheChart'), {
       y: { ticks: { callback: v => Math.round(v/10000000) + '천만', font: { size: 10 } }, grid: { color: '#e2e8f0' } }
     }
   }
-});
+}) );
 
 // ─── 감사헌금 라인 ───────────────────────────────────────────
 const thanks = {
@@ -353,7 +357,7 @@ const thanks = {
   2024: [21341900, 20906000, 23545000, 17165329, 19935000, 21233088, 19510000, 19462000, 24224760, 19472000, 18158950, 25280900],
   2025: [17111000, 19715000, 22530751, 21169420, 19130000, 23497000, 16196712, 22190800, 18493000, 17454000, 19809006, 19110446],
 };
-new Chart(document.getElementById('thanksChart'), {
+allCharts.push( new Chart(document.getElementById('thanksChart'), {
   type: 'line',
   data: {
     labels: months,
@@ -378,12 +382,12 @@ new Chart(document.getElementById('thanksChart'), {
       y: { ticks: { callback: v => Math.round(v/1000000) + '백만', font: { size: 10 } }, grid: { color: '#e2e8f0' } }
     }
   }
-});
+}) );
 
 // ─── 연도별 종류 누적 바 ─────────────────────────────────────
 const typeKeys = Object.keys(typeData);
 const typeColors = ['#4299e1','#48bb78','#ed8936','#9f7aea','#f687b3','#68d391','#fc8181','#f6e05e'];
-new Chart(document.getElementById('typeBar'), {
+allCharts.push( new Chart(document.getElementById('typeBar'), {
   type: 'bar',
   data: {
     labels: ['2023년', '2024년', '2025년'],
@@ -408,7 +412,13 @@ new Chart(document.getElementById('typeBar'), {
       y: { stacked: true, ticks: { callback: v => Math.round(v/100000000) + '억', font: { size: 11 } }, grid: { color: '#e2e8f0' } }
     }
   }
+}) );
+
+// ─── 리사이즈 시 차트 강제 갱신 ─────────────────────────────────
+const ro = new ResizeObserver(() => {
+  allCharts.forEach(c => c.resize());
 });
+ro.observe(document.querySelector('.container'));
 
 // ─── 월별 상세 표 ────────────────────────────────────────────
 const tbody1 = document.getElementById('monthTable');
