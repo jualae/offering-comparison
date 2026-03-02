@@ -20,14 +20,13 @@
     background: #f0f4f8;
     color: #2d3748;
     padding: 24px 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin: 0;
   }
   .container {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
+    display: block;
   }
   h1 {
     text-align: center;
@@ -304,8 +303,8 @@ new Chart(document.getElementById('lineChart'), {
       borderWidth: 3,
     }))
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
+    options: {
+    responsive: true, maintainAspectRatio: false, resizeDelay: 100,
     plugins: {
       legend: { position: 'top', labels: { font: { size: 12 }, boxWidth: 20, boxHeight: 4, padding: 16 } },
       tooltip: { callbacks: { label: c => ` ${c.dataset.label}: ${c.parsed.y.toLocaleString('ko-KR')}원` } }
